@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  sql_lab_client:
+    image: vinhbh/sql-lab-client:1.1
+    container_name: sql_lab_client_demo
+    ports:
+      - "3000:3000"
+
+  sql_lab_server_backend:
+    container_name: sql_lab_server_backend_demo
+    image: vinhbh/sql-lab-server:1.0
+    ports:
+      - "8000:8000"
+    command: npm run dev
+    networks:
+      - sql_lab_network
+    depends_on:
+      - sql_lab_server_db
+
+  sql_lab_server_db:
+    image: mysql:8.0.37
+    restart: always
+    container_name: sql_lab_server_db_demo
+    environment:
+      MYSQL_ROOT_PASSWORD: SqlLab2024!
+      MYSQL_DATABASE: sql_lab_cms
+    networks:
+      - sql_lab_network
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - sql_lab_server_db_data_v6:/var/lib/mysql
+
+  rabbitmq_sql:
+    container_name: rabbitmq_sql_demo
+    image: "rabbitmq:3.9-management"
+    networks:
+      - sql_lab_network
+
+volumes:
+  sql_lab_server_db_data_v6:
+
+networks:
+  sql_lab_network:
+    driver: bridge
