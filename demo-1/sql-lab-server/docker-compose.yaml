@@ -6,6 +6,8 @@ services:
     container_name: sql_lab_client_demo
     ports:
       - "3000:3000"
+    environment:
+      - REACT_APP_BASE_BACKEND_URL=https://sql-api.toiyeuptit.com/api/v1
 
   sql_lab_server_backend:
     container_name: sql_lab_server_backend_demo
@@ -30,7 +32,7 @@ services:
       - sql_lab_network
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-      - sql_lab_server_db_data_v6:/var/lib/mysql
+      - sql_lab_server_db_data_v9:/var/lib/mysql
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -hlocalhost -uroot -prootpassword"]
       interval: 10s
@@ -45,7 +47,7 @@ services:
       - sql_lab_network
 
 volumes:
-  sql_lab_server_db_data_v6:
+  sql_lab_server_db_data_v9:
 
 networks:
   sql_lab_network:
