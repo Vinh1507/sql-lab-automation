@@ -12,7 +12,7 @@ cd mysql-judge-service
 docker compose up 
 ```
 
-Src code
+Src code MySQL
 
 ```
 select * from Customer123 limit 3;
