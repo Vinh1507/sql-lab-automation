@@ -1,0 +1,7 @@
+CREATE USER 'sql_lab_s2'@'%' IDENTIFIED BY 'SqlLab2024!';
+GRANT CREATE, ALTER, INSERT, DROP, UPDATE, DELETE, SELECT ON *.* TO 'sql_lab_s2'@'%';
+
+CREATE USER 'sql_lab_s3'@'%' IDENTIFIED BY 'SqlLab2024!';
+GRANT CREATE, ALTER, INSERT, UPDATE, DELETE, SELECT ON *.* TO 'sql_lab_s3'@'%';
+
+SET GLOBAL max_execution_time = 15000;

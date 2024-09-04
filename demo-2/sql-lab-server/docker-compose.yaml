@@ -1,0 +1,68 @@
+version: '3'
+
+services:
+  sql_lab_client:
+    image: vinhbh/sql-lab-client:2.2
+    container_name: sql_lab_client_demo
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_BASE_BACKEND_URL=http://localhost:8000/api/v1
+
+  sql_lab_server_backend:
+    container_name: sql_lab_server_backend_demo
+    image: vinhbh/sql-lab-server:2.1
+    ports:
+      - "8000:8000"
+    command: npm run dev
+    networks:
+      - sql_lab_network
+    depends_on:
+      sql_lab_server_db:
+        condition: service_healthy
+
+  sql_lab_server_db:
+    image: mysql:8.0.37
+    restart: always
+    container_name: sql_lab_server_db_demo
+    environment:
+      MYSQL_ROOT_PASSWORD: SqlLab2024!
+      MYSQL_DATABASE: sql_lab_cms
+    ports:
+      - "3308:3306"
+    networks:
+      - sql_lab_network
+    volumes:
+      - sql_lab_server_db_data_v11:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -hlocalhost -uroot -prootpassword"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 5s
+
+  rabbitmq_sql:
+    container_name: rabbitmq_sql_demo
+    image: "rabbitmq:3.9-management"
+    networks:
+      - sql_lab_network
+
+  redis_sql:
+    image: redis:latest
+    container_name: redis_sql
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - sql_lab_network
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+
+volumes:
+  sql_lab_server_db_data_v11:
+  redis_data:
+
+networks:
+  sql_lab_network:
+    driver: bridge
