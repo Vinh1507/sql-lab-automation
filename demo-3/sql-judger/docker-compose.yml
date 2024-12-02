@@ -11,6 +11,9 @@ services:
       - .env
     environment:
       - PYTHONUNBUFFERED=1  # Đảm bảo rằng output không bị đệm, hữu ích khi debug
+      - SQL_LAB_SERVER_BASE_URL=http://192.168.144.1:8000/api/v1 # Thay thế 192.168.144.1 thành IP/domain server chạy back-end
+      - S3_ENDPOINT=192.168.144.1:9000 # Thay thế 192.168.144.1 thành IP/domain server chạy back-end
+      - RABBITMQ_HOST=192.168.144.1 # Thay thế 192.168.144.1 thành IP/domain server chạy back-end
     depends_on:
       - mysql_judge_db
       - sqlserver
@@ -24,6 +27,9 @@ services:
       - .env
     environment:
       - PYTHONUNBUFFERED=1  # Đảm bảo rằng output không bị đệm, hữu ích khi debug
+      - SQL_LAB_SERVER_BASE_URL=http://192.168.144.1:8000/api/v1 # Thay thế 192.168.144.1 thành IP/domain server chạy back-end
+      - S3_ENDPOINT=192.168.144.1:9000 # Thay thế 192.168.144.1 thành IP/domain server chạy back-end
+      - RABBITMQ_HOST=192.168.144.1 # Thay thế 192.168.144.1 thành IP/domain server chạy back-end
     depends_on:
       - mysql_judge_db
       - sqlserver
