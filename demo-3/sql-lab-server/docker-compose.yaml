@@ -9,7 +9,7 @@ services:
     env_file:
       - .env.client
     environment:
-      - REACT_APP_BASE_BACKEND_URL=http://192.168.144.1:8000/api/v1
+      - REACT_APP_BASE_BACKEND_URL=http://192.168.144.1:8000/api/v1 # Thay thế 192.168.144.1 thành IP/domain server chạy back-end
 
   sql_lab_server_backend:
     container_name: sql_lab_server_backend
