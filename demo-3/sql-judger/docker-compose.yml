@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+
+  # SQL JUDGER LIST
+  # no.1 judger
+  sql-judger:
+    image: vinhbh/sql-judger:3.1
+    container_name: sql-judger
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1  # Đảm bảo rằng output không bị đệm, hữu ích khi debug
+    depends_on:
+      - mysql_judge_db
+      - sqlserver
+      - redis
+
+  # no.2 judger
+  sql-judger-2:
+    image: vinhbh/sql-judger:3.1
+    container_name: sql-judger-2
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1  # Đảm bảo rằng output không bị đệm, hữu ích khi debug
+    depends_on:
+      - mysql_judge_db
+      - sqlserver
+      - redis
+
+  mysql_judge_db:
+    image: mysql:8.0.37
+    restart: always
+    container_name: mysql_judge_db
+    ports:
+      - 3309:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: SqlLab2024!
+      MYSQL_DATABASE: base_issue_data
+    volumes:
+      - ./docker-data/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_db_data_v17:/var/lib/mysql
+
+  sqlserver:
+    container_name: sqlserver
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=SqlLab2024@CNTT1
+      - MSSQL_PID=Developer
+    user: root
+    ports:
+      - 1433:1433
+    volumes:
+      - sqlserver_data3:/var/opt/mssql
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P SqlLab2024@CNTT1 -C -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      retries: 10
+      start_period: 10s
+      timeout: 3s
+  sqlserver.configurator:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    user: root
+    volumes:
+      - ./docker-data/mssql_server-init.sql:/docker-entrypoint-initdb.d/init.sql
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    command: >
+      bash -c '
+      /opt/mssql-tools18/bin/sqlcmd -S sqlserver -U sa -P SqlLab2024@CNTT1 -C -d master -i docker-entrypoint-initdb.d/init.sql;
+      echo "All done!";
+      '
+
+  redis:
+    image: redis:latest
+    container_name: redis_judger
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
+  mysql_db_data_v17:
+  sqlserver_data3:

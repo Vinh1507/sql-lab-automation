@@ -2,13 +2,18 @@
 
 ## Run Containers
 
+### 1. Chạy các dịch vụ client, server, minio (no SSL), redis, rabbitMQ
 ```
-cd demo-2/sql-lab-server
+cd demo-3/sql-lab-server
 docker compose up 
+
+# Migrate DB cho backend
+docker exec -it sql_lab_server_backend npx sequelize-cli db:migrate
 ```
 
+### 2. Chạy máy chấm
 ```
-cd demo-2/mysql-judge-service
+cd demo-3/sql-judger
 docker compose up 
 ```
 
