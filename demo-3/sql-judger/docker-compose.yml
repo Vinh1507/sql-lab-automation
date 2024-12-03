@@ -14,6 +14,7 @@ services:
       - SQL_LAB_SERVER_BASE_URL=http://localhost:8000/api/v1 # Thay thế localhost thành IP/domain server chạy back-end
       - S3_ENDPOINT=localhost:9000 # Thay thế localhost thành IP/domain server chạy back-end
       - RABBITMQ_HOST=localhost # Thay thế localhost thành IP/domain server chạy back-end
+      - RABBITMQ_PORT=5673
 
   # no.2 judger
   sql-judger-2:
@@ -26,6 +27,7 @@ services:
       - SQL_LAB_SERVER_BASE_URL=http://localhost:8000/api/v1 # Thay thế localhost thành IP/domain server chạy back-end
       - S3_ENDPOINT=localhost:9000 # Thay thế localhost thành IP/domain server chạy back-end
       - RABBITMQ_HOST=localhost # Thay thế localhost thành IP/domain server chạy back-end
+      - RABBITMQ_PORT=5673
 
   mysql_judge_db:
     image: mysql:8.0.37

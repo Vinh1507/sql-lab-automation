@@ -52,8 +52,7 @@ services:
     container_name: rabbitmq_sql
     image: "rabbitmq:3.9-management"
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "5673:5672"
     networks:
       - sql_lab_network
 
