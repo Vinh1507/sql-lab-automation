@@ -11,8 +11,8 @@ services:
       - .env
     environment:
       - PYTHONUNBUFFERED=1  # Đảm bảo rằng output không bị đệm, hữu ích khi debug
-      - SQL_LAB_SERVER_BASE_URL=https://sql-api.toiyeuptit.com/api/v1 # Thay thế thành IP/domain server chạy back-end
-      - S3_ENDPOINT=10.99.3.161:9000 # Thay thế localhost thành IP/domain server chạy back-end
+      - SQL_LAB_SERVER_BASE_URL=http://sql_lab_server_backend:8000/api/v1 # Thay thế thành IP/domain server chạy back-end
+      - S3_ENDPOINT=minio-sql:9000 # Thay thế localhost thành IP/domain server chạy back-end
       - RABBITMQ_HOST=rabbitmq_sql # Thay thế localhost thành IP/domain server chạy back-end
       - RABBITMQ_PORT=5672
     networks:
@@ -26,7 +26,7 @@ services:
       - .env
     environment:
       - PYTHONUNBUFFERED=1  # Đảm bảo rằng output không bị đệm, hữu ích khi debug
-      - SQL_LAB_SERVER_BASE_URL=https://sql-api.toiyeuptit.com/api/v1 # Thay thế thành IP/domain server chạy back-end
+      - SQL_LAB_SERVER_BASE_URL=http://sql_lab_server_backend:8000/api/v1 # Thay thế thành IP/domain server chạy back-end
       - S3_ENDPOINT=minio-sql:9000 # Thay thế localhost thành IP/domain server chạy back-end
       - RABBITMQ_HOST=rabbitmq_sql # Thay thế localhost thành IP/domain server chạy back-end
       - RABBITMQ_PORT=5672
@@ -45,6 +45,8 @@ services:
     volumes:
       - ./docker-data/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql
       - mysql_db_data_v17:/var/lib/mysql
+    networks:
+      -  sql-lab-server_sql_lab_network
 
   sqlserver:
     container_name: sqlserver
@@ -65,6 +67,9 @@ services:
       retries: 10
       start_period: 10s
       timeout: 3s
+    networks:
+      -  sql-lab-server_sql_lab_network
+
   sqlserver.configurator:
     image: mcr.microsoft.com/mssql/server:2022-latest
     user: root
@@ -78,12 +83,16 @@ services:
       /opt/mssql-tools18/bin/sqlcmd -S sqlserver -U sa -P SqlLab2024@CNTT1 -C -d master -i docker-entrypoint-initdb.d/init.sql;
       echo "All done!";
       '
+    networks:
+      -  sql-lab-server_sql_lab_network
 
   redis:
     image: redis:latest
     container_name: redis_judger
     volumes:
       - redis_data:/data
+    networks:
+      -  sql-lab-server_sql_lab_network
 
 volumes:
   redis_data:
