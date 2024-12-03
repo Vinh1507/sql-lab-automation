@@ -13,8 +13,10 @@ services:
       - PYTHONUNBUFFERED=1  # Đảm bảo rằng output không bị đệm, hữu ích khi debug
       - SQL_LAB_SERVER_BASE_URL=https://sql-api.toiyeuptit.com/api/v1 # Thay thế thành IP/domain server chạy back-end
       - S3_ENDPOINT=10.99.3.161:9000 # Thay thế localhost thành IP/domain server chạy back-end
-      - RABBITMQ_HOST=10.99.3.161 # Thay thế localhost thành IP/domain server chạy back-end
-      - RABBITMQ_PORT=5673
+      - RABBITMQ_HOST=rabbitmq_sql # Thay thế localhost thành IP/domain server chạy back-end
+      - RABBITMQ_PORT=5672
+    networks:
+      -  sql-lab-server_sql_lab_network
 
   # no.2 judger
   sql-judger-2:
@@ -25,9 +27,11 @@ services:
     environment:
       - PYTHONUNBUFFERED=1  # Đảm bảo rằng output không bị đệm, hữu ích khi debug
       - SQL_LAB_SERVER_BASE_URL=https://sql-api.toiyeuptit.com/api/v1 # Thay thế thành IP/domain server chạy back-end
-      - S3_ENDPOINT=10.99.3.161:9000 # Thay thế localhost thành IP/domain server chạy back-end
-      - RABBITMQ_HOST=10.99.3.161 # Thay thế localhost thành IP/domain server chạy back-end
-      - RABBITMQ_PORT=5673
+      - S3_ENDPOINT=minio-sql:9000 # Thay thế localhost thành IP/domain server chạy back-end
+      - RABBITMQ_HOST=rabbitmq_sql # Thay thế localhost thành IP/domain server chạy back-end
+      - RABBITMQ_PORT=5672
+    networks:
+      -  sql-lab-server_sql_lab_network
 
   mysql_judge_db:
     image: mysql:8.0.37
@@ -85,3 +89,7 @@ volumes:
   redis_data:
   mysql_db_data_v17:
   sqlserver_data4:
+
+networks:
+   sql-lab-server_sql_lab_network:
+    external: true
