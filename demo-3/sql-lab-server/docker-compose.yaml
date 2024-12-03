@@ -15,7 +15,7 @@ services:
     container_name: sql_lab_server_backend
     image: vinhbh/sql-lab-server:3.3
     ports:
-      - "8000:8000"
+      - "8001:8000"
     command: npm run prod
     networks:
       - sql_lab_network
