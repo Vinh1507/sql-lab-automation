@@ -14,10 +14,6 @@ services:
       - SQL_LAB_SERVER_BASE_URL=http://192.168.144.1:8000/api/v1 # Thay thế 192.168.144.1 thành IP/domain server chạy back-end
       - S3_ENDPOINT=192.168.144.1:9000 # Thay thế 192.168.144.1 thành IP/domain server chạy back-end
       - RABBITMQ_HOST=192.168.144.1 # Thay thế 192.168.144.1 thành IP/domain server chạy back-end
-    depends_on:
-      - mysql_judge_db
-      - sqlserver
-      - redis
 
   # no.2 judger
   sql-judger-2:
@@ -30,10 +26,6 @@ services:
       - SQL_LAB_SERVER_BASE_URL=http://192.168.144.1:8000/api/v1 # Thay thế 192.168.144.1 thành IP/domain server chạy back-end
       - S3_ENDPOINT=192.168.144.1:9000 # Thay thế 192.168.144.1 thành IP/domain server chạy back-end
       - RABBITMQ_HOST=192.168.144.1 # Thay thế 192.168.144.1 thành IP/domain server chạy back-end
-    depends_on:
-      - mysql_judge_db
-      - sqlserver
-      - redis
 
   mysql_judge_db:
     image: mysql:8.0.37
@@ -59,7 +51,7 @@ services:
     ports:
       - 1433:1433
     volumes:
-      - sqlserver_data3:/var/opt/mssql
+      - sqlserver_data4:/var/opt/mssql
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P SqlLab2024@CNTT1 -C -Q 'SELECT 1' || exit 1"]
@@ -92,4 +84,4 @@ services:
 volumes:
   redis_data:
   mysql_db_data_v17:
-  sqlserver_data3:
+  sqlserver_data4:
