@@ -1,4 +1,7 @@
 USE mysql;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+
 CREATE USER 'sql_lab_s1'@'%' IDENTIFIED BY 'SqlLab2024!';
 GRANT ALL ON *.* TO 'sql_lab_s1'@'%' WITH GRANT OPTION;
 GRANT GRANT OPTION ON *.* TO 'sql_lab_s1'@'%';
