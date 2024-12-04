@@ -40,8 +40,8 @@ services:
     ports:
       - 3309:3306
     environment:
-      MYSQL_ROOT_PASSWORD: "SqlLab2024!"
-      MYSQL_DATABASE: base_issue_data
+      - MYSQL_ROOT_PASSWORD=SqlLab2024!
+      - MYSQL_DATABASE=base_issue_data
     volumes:
       - ./docker-data/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql
       - mysql_db_data_v20:/var/lib/mysql
