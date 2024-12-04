@@ -5,7 +5,7 @@ services:
   # SQL JUDGER LIST
   # no.1 judger
   sql-judger:
-    image: vinhbh/sql-judger:3.5
+    image: vinhbh/sql-judger:3.6
     container_name: sql-judger
     env_file:
       - .env
@@ -20,7 +20,7 @@ services:
 
   # no.2 judger
   sql-judger-2:
-    image: vinhbh/sql-judger:3.5
+    image: vinhbh/sql-judger:3.6
     container_name: sql-judger-2
     env_file:
       - .env
@@ -40,7 +40,7 @@ services:
     ports:
       - 3309:3306
     environment:
-      MYSQL_ROOT_PASSWORD: SqlLab2024!
+      MYSQL_ROOT_PASSWORD: 'SqlLab2024!'
       MYSQL_DATABASE: base_issue_data
     volumes:
       - ./docker-data/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql
