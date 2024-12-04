@@ -34,7 +34,7 @@ services:
       -  sql-lab-server_sql_lab_network
 
   mysql_judge_db:
-    image: mysql:8.0
+    image: mysql:5.7.30
     restart: always
     container_name: mysql_judge_db
     ports:
