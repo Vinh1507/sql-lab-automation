@@ -18,20 +18,20 @@ services:
     networks:
       -  sql-lab-server_sql_lab_network
 
-  # no.2 judger
-  sql-judger-2:
-    image: vinhbh/sql-judger:3.10
-    container_name: sql-judger-2
-    env_file:
-      - .env
-    environment:
-      - PYTHONUNBUFFERED=1  # Đảm bảo rằng output không bị đệm, hữu ích khi debug
-      - SQL_LAB_SERVER_BASE_URL=http://sql_lab_server_backend:8000/api/v1 # Thay thế thành IP/domain server chạy back-end
-      - S3_ENDPOINT=minio-sql:9000 # Thay thế localhost thành IP/domain server chạy back-end
-      - RABBITMQ_HOST=rabbitmq_sql # Thay thế localhost thành IP/domain server chạy back-end
-      - RABBITMQ_PORT=5672
-    networks:
-      -  sql-lab-server_sql_lab_network
+  # # no.2 judger
+  # sql-judger-2:
+  #   image: vinhbh/sql-judger:3.10
+  #   container_name: sql-judger-2
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - PYTHONUNBUFFERED=1  # Đảm bảo rằng output không bị đệm, hữu ích khi debug
+  #     - SQL_LAB_SERVER_BASE_URL=http://sql_lab_server_backend:8000/api/v1 # Thay thế thành IP/domain server chạy back-end
+  #     - S3_ENDPOINT=minio-sql:9000 # Thay thế localhost thành IP/domain server chạy back-end
+  #     - RABBITMQ_HOST=rabbitmq_sql # Thay thế localhost thành IP/domain server chạy back-end
+  #     - RABBITMQ_PORT=5672
+  #   networks:
+  #     -  sql-lab-server_sql_lab_network
 
   mysql_judge_db:
     image: mysql:8.0
