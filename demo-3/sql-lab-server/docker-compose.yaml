@@ -2,7 +2,7 @@ version: '3'
 
 services:
   sql_lab_client:
-    image: vinhbh/sql-lab-client:3.3
+    image: vinhbh/sql-lab-client:local
     container_name: sql_lab_client
     ports:
       - "3000:80"
