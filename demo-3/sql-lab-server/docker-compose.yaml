@@ -40,7 +40,7 @@ services:
     networks:
       - sql_lab_network
     volumes:
-      - sql_lab_server_db_data_v18:/var/lib/mysql
+      - sql_lab_server_db_data_v1612:/var/lib/mysql
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -hlocalhost -uroot -prootpassword"]
       interval: 10s
@@ -86,7 +86,7 @@ services:
       - sql_lab_network
 
 volumes:
-  sql_lab_server_db_data_v18:
+  sql_lab_server_db_data_v1612:
   redis_data:
   minio_sql_data:
   minio_sql_config:
