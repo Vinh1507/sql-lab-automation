@@ -2,7 +2,7 @@ version: '3'
 
 services:
   sql_lab_client:
-    image: vinhbh/sql-lab-client:3.9
+    image: vinhbh/sql-lab-client:3.11
     container_name: sql_lab_client
     ports:
       - "3000:80"
@@ -13,7 +13,7 @@ services:
 
   sql_lab_server_backend:
     container_name: sql_lab_server_backend
-    image: vinhbh/sql-lab-server:3.8
+    image: vinhbh/sql-lab-server:3.11
     ports:
       - "8001:8000"
     command: npm run prod
@@ -53,6 +53,8 @@ services:
     image: "rabbitmq:3.9-management"
     ports:
       - "5673:5672"
+    volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
     networks:
       - sql_lab_network
 
