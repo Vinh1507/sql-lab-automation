@@ -21,7 +21,7 @@ services:
   # # no.2 judger
   sql-judger-2:
     image: vinhbh/sql-judger:3.9
-    container_name: sql-judger
+    container_name: sql-judger-2
     env_file:
       - .env
     environment:
