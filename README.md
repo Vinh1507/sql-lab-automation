@@ -18,3 +18,13 @@ docker compose up
 ```
 
 ![alt text](./images/image-1.png)
+
+
+
+### Nếu muốn dừng Queue, xóa các message trong queue và dừng các workers
+```
+docker exec -it sql_lab_server_backend node src/queues/clearQueue.js
+```
+
+
+docker exec sql_lab_server_db mysqldump -u root -pSqlLab2024! sql_lab_cms > sql_lab_dump_1.sql

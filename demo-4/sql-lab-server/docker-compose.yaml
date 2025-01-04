@@ -1,0 +1,96 @@
+version: '3'
+
+services:
+  sql_lab_client:
+    image: vinhbh/sql-lab-client:4.0.1
+    container_name: sql_lab_client
+    ports:
+      - "3000:80"
+    env_file:
+      - .env.client
+    environment:
+      - REACT_APP_BASE_BACKEND_URL=https://sql-api.toiyeuptit.com/api/v1 # Thay thế 192.168.144.1 thành IP/domain server chạy back-end
+
+  sql_lab_server_backend:
+    container_name: sql_lab_server_backend
+    image: vinhbh/sql-lab-server:4.0.1
+    ports:
+      - "8001:8000"
+    command: sh -c "npm run prod & node worker.js && wait"
+    networks:
+      - sql_lab_network
+    depends_on:
+      sql_lab_server_db:
+        condition: service_healthy
+    env_file:
+      - .env.server
+    environment:
+      DEFAULT_ADMIN_USERNAME: admin
+      DEFAULT_ADMIN_PASSWORD: akshfdt_81h7914@jald_ad
+
+  sql_lab_server_db:
+    image: mysql:8.0.37
+    restart: always
+    container_name: sql_lab_server_db
+    environment:
+      MYSQL_ROOT_PASSWORD: SqlLab2024!
+      MYSQL_DATABASE: sql_lab_cms
+    ports:
+      - "3308:3306"
+    networks:
+      - sql_lab_network
+    volumes:
+      - sql_lab_server_db_data_v1612:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -hlocalhost -uroot -prootpassword"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 5s
+
+  rabbitmq_sql:
+    container_name: rabbitmq_sql
+    image: "rabbitmq:3.9-management"
+    ports:
+      - "5673:5672"
+    volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    networks:
+      - sql_lab_network
+
+  redis_sql:
+    image: redis:latest
+    container_name: redis_sql
+    volumes:
+      - redis_data:/data
+    networks:
+      - sql_lab_network
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+
+  minio-sql:
+    image: minio/minio
+    container_name: minio-sql
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: vinhbh
+      MINIO_ROOT_PASSWORD: 1234567abc
+    volumes:
+      - minio_sql_data:/data
+      - minio_sql_config:/root/.minio
+      # - ./certs:/root/.minio/certs # Nếu muốn sử dụng SSL cho minio
+    command: server /data --console-address ":9001"
+    networks:
+      - sql_lab_network
+
+volumes:
+  sql_lab_server_db_data_v1612:
+  redis_data:
+  minio_sql_data:
+  minio_sql_config:
+
+networks:
+  sql_lab_network:
+    driver: bridge

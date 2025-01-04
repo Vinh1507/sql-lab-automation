@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+
+  # SQL JUDGER LIST
+  # no.1 judger
+  sql-judger:
+    image: vinhbh/sql-judger:4.0.1
+    container_name: sql-judger
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1  # Đảm bảo rằng output không bị đệm, hữu ích khi debug
+      - SQL_LAB_SERVER_BASE_URL=http://sql_lab_server_backend:8000/api/v1 # Thay thế thành IP/domain server chạy back-end
+      - S3_ENDPOINT=minio-sql:9000 # Thay thế localhost thành IP/domain server chạy back-end
+      - RABBITMQ_HOST=rabbitmq_sql # Thay thế localhost thành IP/domain server chạy back-end
+      - RABBITMQ_PORT=5672
+    networks:
+      -  sql-lab-server_sql_lab_network
+
+  # # no.2 judger
+  sql-judger-2:
+    image: vinhbh/sql-judger:4.0.1
+    container_name: sql-judger-2
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1  # Đảm bảo rằng output không bị đệm, hữu ích khi debug
+      - SQL_LAB_SERVER_BASE_URL=http://sql_lab_server_backend:8000/api/v1 # Thay thế thành IP/domain server chạy back-end
+      - S3_ENDPOINT=minio-sql:9000 # Thay thế localhost thành IP/domain server chạy back-end
+      - RABBITMQ_HOST=rabbitmq_sql # Thay thế localhost thành IP/domain server chạy back-end
+      - RABBITMQ_PORT=5672
+    networks:
+      -  sql-lab-server_sql_lab_network
+
+  mysql_judge_db:
+    image: mysql:8.0
+    restart: always
+    container_name: mysql_judge_db
+    ports:
+      - 3309:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=SqlLab2024!
+      - MYSQL_DATABASE=base_issue_data
+    volumes:
+      - ./docker-data/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_db_data_v20:/var/lib/mysql
+    networks:
+      -  sql-lab-server_sql_lab_network
+
+  sqlserver:
+    container_name: sqlserver
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=SqlLab2024@CNTT1
+      - MSSQL_PID=Developer
+    user: root
+    ports:
+      - 1433:1433
+    volumes:
+      - sqlserver_data_v20:/var/opt/mssql
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P SqlLab2024@CNTT1 -C -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      retries: 10
+      start_period: 10s
+      timeout: 3s
+    networks:
+      -  sql-lab-server_sql_lab_network
+
+  sqlserver.configurator:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    user: root
+    volumes:
+      - ./docker-data/mssql_server-init.sql:/docker-entrypoint-initdb.d/init.sql
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    command: >
+      bash -c '
+      /opt/mssql-tools18/bin/sqlcmd -S sqlserver -U sa -P SqlLab2024@CNTT1 -C -d master -i docker-entrypoint-initdb.d/init.sql;
+      echo "All done!";
+      '
+    networks:
+      -  sql-lab-server_sql_lab_network
+
+  redis:
+    image: redis:latest
+    container_name: redis_judger
+    volumes:
+      - redis_data_judge:/data
+    networks:
+      -  sql-lab-server_sql_lab_network
+
+volumes:
+  redis_data_judge:
+  mysql_db_data_v20:
+  sqlserver_data_v20:
+
+networks:
+  sql-lab-server_sql_lab_network:
+    external: true
