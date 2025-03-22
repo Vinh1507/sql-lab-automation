@@ -1,0 +1,93 @@
+version: '3'
+
+services:
+  28tech_sql_web:
+    image: vinhbh/sql-web-28tech:1.0.1
+    container_name: 28tech_sql_web
+    ports:
+      - "3004:80"
+    env_file:
+      - .env.client
+    environment:
+      - REACT_APP_BASE_BACKEND_URL=https://sql-api.toiyeuptit.com/api/v1 # Thay thế 192.168.144.1 thành IP/domain server chạy back-end
+
+  28tech_sql_api:
+    container_name: 28tech_sql_api
+    image: vinhbh/28tech-sql-api:1.0.3
+    ports:
+      - "8004:8000"
+    command: sh -c "npm run prod & node worker.js && wait"
+    networks:
+      - 28tech_network
+    depends_on:
+      28tech_cms_db:
+        condition: service_healthy
+    env_file:
+      - .env.server
+    environment:
+      S3_ENDPOINT: 28tech-minio-sql
+      DEFAULT_ADMIN_USERNAME: admin
+      DEFAULT_ADMIN_PASSWORD: 28tech_admin@123
+
+  28tech_cms_db:
+    image: mysql:8.0.37
+    restart: always
+    container_name: 28tech_cms_db
+    environment:
+      MYSQL_ROOT_PASSWORD: SqlLab2024!
+      MYSQL_DATABASE: sql_lab_cms
+    networks:
+      - 28tech_network
+    volumes:
+      - 28tech_cms_db_data_v1612:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -hlocalhost -uroot -prootpassword"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 5s
+
+  28tech_rabbitmq_sql:
+    container_name: 28tech_rabbitmq_sql
+    image: "rabbitmq:3.9-management"
+    volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    networks:
+      - 28tech_network
+
+  28tech_redis_sql:
+    image: redis:latest
+    container_name: 28tech_redis_sql
+    volumes:
+      - 28tech_redis_data:/data
+    networks:
+      - 28tech_network
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+
+  28tech-minio-sql:
+    image: minio/minio
+    container_name: 28tech-minio-sql
+    ports:
+      - "9002:9000"
+      - "9003:9001"
+    environment:
+      MINIO_ROOT_USER: tech28
+      MINIO_ROOT_PASSWORD: tech28@123
+    volumes:
+      - 28tech_minio_sql_data:/data
+      - 28tech_minio_sql_config:/root/.minio
+      # - ./certs:/root/.minio/certs # Nếu muốn sử dụng SSL cho minio
+    command: server /data --console-address ":9001"
+    networks:
+      - 28tech_network
+
+volumes:
+  28tech_cms_db_data_v1612:
+  28tech_redis_data:
+  28tech_minio_sql_data:
+  28tech_minio_sql_config:
+
+networks:
+  28tech_network:
+    driver: bridge

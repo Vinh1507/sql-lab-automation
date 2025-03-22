@@ -5,7 +5,7 @@ services:
   # SQL JUDGER LIST
   # no.1 judger
   sql-judger:
-    image: vinhbh/sql-judger:4.0.3
+    image: vinhbh/sql-judger:4.1
     container_name: sql-judger
     env_file:
       - .env
@@ -18,9 +18,9 @@ services:
     networks:
       -  sql-lab-server_sql_lab_network
 
-  # # no.2 judger
+  # no.2 judger
   sql-judger-2:
-    image: vinhbh/sql-judger:4.0.2
+    image: vinhbh/sql-judger:4.1
     container_name: sql-judger-2
     env_file:
       - .env
@@ -44,7 +44,8 @@ services:
       - MYSQL_DATABASE=base_issue_data
     volumes:
       - ./docker-data/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql
-      - mysql_db_data_v20:/var/lib/mysql
+      - mysql_db_data_v21:/var/lib/mysql
+    command: --lower-case-table-names=1 # Disabled case sensitive (change docker volume if existed)
     networks:
       -  sql-lab-server_sql_lab_network
 
@@ -96,7 +97,7 @@ services:
 
 volumes:
   redis_data_judge:
-  mysql_db_data_v20:
+  mysql_db_data_v21:
   sqlserver_data_v20:
 
 networks:

@@ -1,0 +1,151 @@
+version: '3.8'
+
+services:
+
+  # SQL JUDGER LIST
+  # no.1 judger
+  28tech-sql-judger:
+    image: vinhbh/sql-judger:4.1
+    container_name: 28tech-sql-judger
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1  # Đảm bảo rằng output không bị đệm, hữu ích khi debug
+      - SQL_LAB_SERVER_BASE_URL=http://28tech_sql_api:8000/api/v1
+      - S3_ENDPOINT=28tech-minio-sql:9000
+      - RABBITMQ_HOST=28tech_rabbitmq_sql
+      - RABBITMQ_PORT=5672
+      - MYSQL_DB_HOST=28tech_mysql_judge_db
+    networks:
+      -  sql-lab-server_28tech_network
+
+  # no.2 judger
+  28tech-sql-judger-2:
+    image: vinhbh/sql-judger:4.1
+    container_name: 28tech-sql-judger-2
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1  # Đảm bảo rằng output không bị đệm, hữu ích khi debug
+      - SQL_LAB_SERVER_BASE_URL=http://28tech_sql_api:8000/api/v1
+      - S3_ENDPOINT=28tech-minio-sql:9000
+      - RABBITMQ_HOST=28tech_rabbitmq_sql
+      - RABBITMQ_PORT=5672
+      - MYSQL_DB_HOST=28tech_mysql_judge_db
+    networks:
+      -  sql-lab-server_28tech_network
+
+  # no.3 judger
+  28tech-sql-judger-3:
+    image: vinhbh/sql-judger:4.1
+    container_name: 28tech-sql-judger-3
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1  # Đảm bảo rằng output không bị đệm, hữu ích khi debug
+      - SQL_LAB_SERVER_BASE_URL=http://28tech_sql_api:8000/api/v1
+      - S3_ENDPOINT=28tech-minio-sql:9000
+      - RABBITMQ_HOST=28tech_rabbitmq_sql
+      - RABBITMQ_PORT=5672
+      - MYSQL_DB_HOST=28tech_mysql_judge_db_2
+    networks:
+      -  sql-lab-server_28tech_network
+
+  # no.4 judger
+  28tech-sql-judger-4:
+    image: vinhbh/sql-judger:4.1
+    container_name: 28tech-sql-judger-4
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1  # Đảm bảo rằng output không bị đệm, hữu ích khi debug
+      - SQL_LAB_SERVER_BASE_URL=http://28tech_sql_api:8000/api/v1
+      - S3_ENDPOINT=28tech-minio-sql:9000
+      - RABBITMQ_HOST=28tech_rabbitmq_sql
+      - RABBITMQ_PORT=5672
+      - MYSQL_DB_HOST=28tech_mysql_judge_db_2
+    networks:
+      -  sql-lab-server_28tech_network
+  
+  28tech_mysql_judge_db:
+    image: mysql:8.0
+    restart: always
+    container_name: 28tech_mysql_judge_db
+    environment:
+      - MYSQL_ROOT_PASSWORD=SqlLab2024!
+      - MYSQL_DATABASE=base_issue_data
+    volumes:
+      - ./docker-data/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql
+      - 28tech_mysql_db_data:/var/lib/mysql
+    command: --lower-case-table-names=1 # Disabled case sensitive (change docker volume if existed)
+    networks:
+      -  sql-lab-server_28tech_network
+
+  28tech_mysql_judge_db_2:
+    image: mysql:8.0
+    restart: always
+    container_name: 28tech_mysql_judge_db_2
+    environment:
+      - MYSQL_ROOT_PASSWORD=SqlLab2024!
+      - MYSQL_DATABASE=base_issue_data
+    volumes:
+      - ./docker-data/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql
+      - 28tech_mysql_db_data_v2:/var/lib/mysql
+    command: --lower-case-table-names=1 # Disabled case sensitive (change docker volume if existed)
+    networks:
+      -  sql-lab-server_28tech_network
+
+  28tech_sqlserver:
+    container_name: 28tech_sqlserver
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=SqlLab2024@CNTT1
+      - MSSQL_PID=Developer
+    user: root
+    volumes:
+      - 28tech_sqlserver_data:/var/opt/mssql
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P SqlLab2024@CNTT1 -C -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      retries: 10
+      start_period: 10s
+      timeout: 3s
+    networks:
+      -  sql-lab-server_28tech_network
+
+  sqlserver.configurator:
+    container_name: 28tech_sqlserver_config
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    user: root
+    volumes:
+      - ./docker-data/mssql_server-init.sql:/docker-entrypoint-initdb.d/init.sql
+    depends_on:
+      28tech_sqlserver:
+        condition: service_healthy
+    command: >
+      bash -c '
+      /opt/mssql-tools18/bin/sqlcmd -S 28tech_sqlserver -U sa -P SqlLab2024@CNTT1 -C -d master -i docker-entrypoint-initdb.d/init.sql;
+      echo "All done!";
+      '
+    networks:
+      -  sql-lab-server_28tech_network
+
+  28tech_redis_judge:
+    image: redis:latest
+    container_name: 28tech_redis_judge
+    volumes:
+      - 28tech_redis_data_judge:/data
+    networks:
+      -  sql-lab-server_28tech_network
+
+volumes:
+  28tech_redis_data_judge:
+  28tech_mysql_db_data:
+  28tech_mysql_db_data_v2:
+  28tech_sqlserver_data:
+
+networks:
+  sql-lab-server_28tech_network:
+    external: true
