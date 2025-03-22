@@ -2,18 +2,16 @@ version: '3'
 
 services:
   sql_lab_client:
-    image: vinhbh/sql-lab-client:4.0.4
+    image: vinhbh/sql-lab-client:4.1
     container_name: sql_lab_client
     ports:
       - "3000:80"
     env_file:
       - .env.client
-    environment:
-      - REACT_APP_BASE_BACKEND_URL=https://sql-api.toiyeuptit.com/api/v1 # Thay thế 192.168.144.1 thành IP/domain server chạy back-end
 
   sql_lab_server_backend:
     container_name: sql_lab_server_backend
-    image: vinhbh/sql-lab-server:4.0.1
+    image: vinhbh/sql-lab-server:4.1
     ports:
       - "8001:8000"
     command: sh -c "npm run prod & node worker.js && wait"
