@@ -5,7 +5,7 @@ services:
   # SQL JUDGER LIST
   # no.1 judger
   sql-judger:
-    image: vinhbh/sql-judger:4.1.2
+    image: vinhbh/sql-judger:4.2
     container_name: sql-judger
     env_file:
       - .env
@@ -20,7 +20,7 @@ services:
 
   # no.2 judger
   sql-judger-2:
-    image: vinhbh/sql-judger:4.1.2
+    image: vinhbh/sql-judger:4.2
     container_name: sql-judger-2
     env_file:
       - .env
