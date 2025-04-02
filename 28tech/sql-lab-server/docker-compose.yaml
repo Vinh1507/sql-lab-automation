@@ -2,7 +2,7 @@ version: '3'
 
 services:
   28tech_sql_web:
-    image: vinhbh/sql-web-28tech:1.0.1
+    image: vinhbh/sql-web-28tech:1.0.2
     container_name: 28tech_sql_web
     ports:
       - "3004:80"
