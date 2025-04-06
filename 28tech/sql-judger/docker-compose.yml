@@ -5,7 +5,7 @@ services:
   # SQL JUDGER LIST
   # no.1 judger
   28tech-sql-judger:
-    image: vinhbh/sql-judger:4.2
+    image: vinhbh/sql-judger:4.2.1
     container_name: 28tech-sql-judger
     env_file:
       - .env
@@ -21,7 +21,7 @@ services:
 
   # no.2 judger
   28tech-sql-judger-2:
-    image: vinhbh/sql-judger:4.2
+    image: vinhbh/sql-judger:4.2.1
     container_name: 28tech-sql-judger-2
     env_file:
       - .env
@@ -37,7 +37,7 @@ services:
 
   # no.3 judger
   28tech-sql-judger-3:
-    image: vinhbh/sql-judger:4.2
+    image: vinhbh/sql-judger:4.2.1
     container_name: 28tech-sql-judger-3
     env_file:
       - .env
@@ -53,7 +53,7 @@ services:
 
   # no.4 judger
   28tech-sql-judger-4:
-    image: vinhbh/sql-judger:4.2
+    image: vinhbh/sql-judger:4.2.1
     container_name: 28tech-sql-judger-4
     env_file:
       - .env
