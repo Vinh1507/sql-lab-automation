@@ -11,7 +11,7 @@ services:
 
   sql_lab_server_backend:
     container_name: sql_lab_server_backend
-    image: vinhbh/sql-lab-server:4.1
+    image: vinhbh/sql-lab-api:5.0
     ports:
       - "8001:8000"
     command: sh -c "npm run prod & node worker.js && wait"

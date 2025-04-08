@@ -13,7 +13,7 @@ services:
 
   28tech_sql_api:
     container_name: 28tech_sql_api
-    image: vinhbh/28tech-sql-api:1.0.4
+    image: vinhbh/sql-lab-api:5.0
     ports:
       - "8004:8000"
     command: sh -c "npm run prod & node worker.js && wait"
